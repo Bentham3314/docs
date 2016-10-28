@@ -7,7 +7,7 @@ http://nginx.org/en/docs/
 http://nginx.org/en/download.html
 
 ## conf
-https://github.com/Bentham3314/config
+https://github.com/Bentham3314/config/tree/master/nginx
 
 ## nginx.md
 
