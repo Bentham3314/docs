@@ -1,0 +1,15 @@
+{
+  "datacenter": "nanoha",
+  "domain": "tea20",
+  "addresses": { "dns": "0.0.0.0" },
+  "bootstrap": false,
+  "bootstrap_expect": 3,
+  "server": true,
+  "data_dir": "/opt/consul",
+  "log_level": "err",
+  "enable_syslog": false,
+  "disable_anonymous_signature": true,
+  "disable_remote_exec": true,
+  "disable_update_check": true,
+  "recursors": ["_DNS1_IP_Addr", "_DNS2_IP_Addr"]
+}

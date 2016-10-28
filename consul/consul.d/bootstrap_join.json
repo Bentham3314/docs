@@ -1,0 +1,1 @@
+{ "start_join": [ "_consul_server1", "_consul_server2", "_consul_server3" ] }

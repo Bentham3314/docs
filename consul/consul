@@ -1,0 +1,15 @@
+consul
+
+
+member list
+
+# /opt/consul/consul members
+
+
+dns api ({nodename}.node.{dc}.{domain})
+# dig @127.0.0.1 -p8600 +noall +ans mon100.node.nanoha.tea20
+
+use dnsmasq
+# dig +noall +ans web01.node.nanoha.tea20
+
+

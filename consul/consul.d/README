@@ -1,0 +1,7 @@
+rename
+client.json -> consul.json
+server.json -> consul.json
+consul.d/bootstrap_expect.json -> consul.json
+bootstrap_join.json -> join.json
+
+bootstrap_expect は consul server の冗長化設定
