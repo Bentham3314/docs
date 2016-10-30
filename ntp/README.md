@@ -1,3 +1,4 @@
+
 #ntp
 
 ### 時刻合わせ
@@ -10,9 +11,9 @@ gap出た時。再起動した時とかたまにズレる。
 # service ntpd stop
 # service ntpd status
 # date
-# ntpdate -d time.data-hotel.net
-# ntpdate time.data-hotel.net
-# ntpdate -d time.data-hotel.net
+# ntpdate -d [ntp-server]
+# ntpdate [ntp-server]
+# ntpdate -d [ntp-server]
 # date; hwclock --show
 # service ntpd status
 # service ntpd start
