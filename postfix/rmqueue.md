@@ -34,49 +34,42 @@
 - 宛先アドレスが複数ある場合1つ目のコマンドだけでは1つ目の宛先アドレスしか調査できないので、両コマンドを実行して確認する
 
 ### キュー削除
+アドレスは foo@bar で
 
 * [送信元アドレス]を指定して削除  
 **$7に送信元アドレス** を指定
 
 ```
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "送信元@ほげほげ" ) print $1 }' | tr -d '*!'
-実際に削除
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "送信元@ほげほげ" ) print $1 }' | tr -d '*!' | postsuper -d -
-削除後確認
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "送信元@ほげほげ" ) print $1 }' | tr -d '*!'
+# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "_FROM" ) print $1 }' | tr -d '*!'
+# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "_FROM" ) print $1 }' | tr -d '*!' | postsuper -d -
+# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "_FROM" ) print $1 }' | tr -d '*!'
 ```
 
 * [宛先アドレス]を指定して削除  
 **$8に宛先アドレス** を指定
 
 ```
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $8 == "宛先@ほげほげ" ) print $1 }' | tr -d '*!'
-実際に削除
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $8 == "宛先@ほげほげ" ) print $1 }' | tr -d '*!' | postsuper -d -
-削除後確認
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $8 == "宛先@ほげほげ" ) print $1 }' | tr -d '*!'
+# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $8 == "_TO" ) print $1 }' | tr -d '*!'
+# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $8 == "_TO" ) print $1 }' | tr -d '*!' | postsuper -d -
+# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $8 == "_TO" ) print $1 }' | tr -d '*!'
 ```
 
 * [送信元アドレス]と[宛先アドレス]を両方指定して削除  
 **$7に送信元アドレス $8に宛先アドレス** を指定
 
 ```
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "送信元@ほげほげ" && $8 == "宛先@ほげほげ" ) print $1 }' | tr -d '*!'
-実際に削除
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "送信元@ほげほげ" && $8 == "宛先@ほげほげ" ) print $1 }' | tr -d '*!'| postsuper -d -
-削除後確認
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "送信元@ほげほげ" && $8 == "宛先@ほげほげ" ) print $1 }' | tr -d '*!'
+# mailq | tail -n '+2' | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "_FROM" && $8 == "_TO" ) print $1 }' | tr -d '*!'
+# mailq | tail -n '+2' | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "_FROM" && $8 == "_TO" ) print $1 }' | tr -d '*!'| postsuper -d -
+# mailq | tail -n '+2' | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "_FROM" && $8 == "_TO" ) print $1 }' | tr -d '*!'
 ```
 
 * [送信元がMAILER-DAEMON]を削除する場合  
 **$7に送信元アドレス** を指定
 
 ```
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "MAILER-DAEMON" ) print $1 }' | tr -d '*!'
-実際に削除
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "MAILER-DAEMON" ) print $1 }' | tr -d '*!' | postsuper -d -
-削除後確認
-# mailq | tail -n '+2'  | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "MAILER-DAEMON" ) print $1 }' | tr -d '*!'
+# mailq | tail -n '+2' | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "MAILER-DAEMON" ) print $1 }' | tr -d '*!'
+# mailq | tail -n '+2' | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "MAILER-DAEMON" ) print $1 }' | tr -d '*!' | postsuper -d -
+# mailq | tail -n '+2' | grep -v '^ *(' | awk 'BEGIN { RS = "" } { if ( $7 == "MAILER-DAEMON" ) print $1 }' | tr -d '*!'
 ```
 
 * キュー全削除
