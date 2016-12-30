@@ -89,3 +89,32 @@ $ curl -ILSs --referer "hoge" URL
 # unzip hoge.zip
 ```
 
+---
+
+### ssh
+
+- PortForward
+
+```
+サーバ上で
+$ ssh -o 'Gatewayports yes' -L 13389:172.16.200.14:3389 localhost -i .ssh/hoge.pem
+
+手元から
+$ ssh -L13389:target:3389 remote -lhoge -i ~/.ssh/hoge
+```
+
+- fingerprint
+
+```
+ssh -o "StrictHostKeyChecking=no"
+```
+
+- for / while
+
+`-n` オプションがミソ
+
+```
+# cat list | while read host ip ; do echo "--- $host / $ip ---" ; ssh -n $ip "ip a | grep inet" ; done
+# for x in `cat list` ; do echo "--- $x --- " ; ssh -n $x "ip a | grep inet" ; done
+```
+
