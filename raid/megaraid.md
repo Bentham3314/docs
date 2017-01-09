@@ -27,7 +27,7 @@
 -a0 アダプタ番号
 下記のAdapter 0 がそう。RAIDが複数組まれている場合は他の番号がつく。
 
-# /opt/MegaRAID/MegaCli/MegaCli64 -LDINFO -L0 -a0
+# /opt/MegaRAID/MegaCli/MegaCli64 -LDINFO -L0 -aALL
 
 
 Adapter 0 -- Virtual Drive Information:
