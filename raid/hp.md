@@ -11,7 +11,7 @@
 # hpacucli ctrl slot=0 pd all show > ./hpacucli-pd
 ```
 
-- rebuild
+- rebuild check
 
 ```
 # hpacucli ctrl slot=0 ld all show status
@@ -36,6 +36,14 @@
 ```
 
 ---
+
+- 略
+
+```
+ctrl = controller
+pd = physicaldrive
+ld = logicaldrive
+```
 
 
 - スロットナンバー確認  
@@ -62,3 +70,32 @@
 # hpacucli ctrl slot=0 ld 13 show detail
 ```
 
+
+---
+
+
+### Rebuildが開始されない場合
+
+```
+# hpacucli ctrl slot=0 ld 2 modify reenable
+```
+
+---
+
+### そもそもfaildしてないディスクを抜く時
+やんごとなき理由(バックアップ用diskとか)でシングルボリュームを  
+強引にRAID 0で認識させて使用している場合  
+ディスクI/Oが発生させないため一度deleteし、Sから認識させなくする。  
+
+I/Oが発生しない事が分かってるディスクならreenableで。
+
+```
+# hpacucli ctrl slot=0 ld all show
+# hpacucli ctrl slot=0 array B delete
+# hpacucli ctrl slot=0 ld all show
+# hpacucli ctrl slot=0 pd all show
+
+# hpacucli ctrl slot=0 ld all show
+# hpacucli ctrl slot=0 create type=ld drives=1I:1:3 raid=0
+# hpacucli ctrl slot=0 ld all show
+```
