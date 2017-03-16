@@ -1,8 +1,29 @@
 # postgres
 
-インフラ屋がいじれる箇所がおもったより少ない、  
-障害時に見るところもよく分からない。  
-なんとなくログみればいいんじゃない。
+### ggr note
+- postgresql.conf  
+
+```
+### mem
+shared_buffers
+wal_ buffers
+
+checkpoint_segments  ### disk flush timing
+
+log_line_prefix='[%t] %rT%d: '   ### log
+
+### tcp session
+tcp_keepalives_idle =
+tcp_keepalives_interval =
+tcp_keepalives_count =
+```
+
+- /etc/sysctl.conf
+
+```
+kernel.shmall
+kernel.shmmax
+```
 
 ### Process list
 path注意  
