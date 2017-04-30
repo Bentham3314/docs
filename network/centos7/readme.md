@@ -1,0 +1,262 @@
+# Network config for CentOS7
+nmcli環境下でのネットワーク設定
+
+## env
+CentOS7.3  
+7.2と7.3ですでに動き違うとかいい加減すぎるでしょ…とは思う
+
+`nmcli c` は設定ファイルが生成されるのみ  
+`nmcli edit` は完了時に設定が反映される
+
+### 従来のNIC名を使用
+GRUB_CMDLINE_LINUX のオプションに下記設定でreboot
+
+```
+biosdevname=0 net.ifnames=0
+```
+
+## 設定確認コマンド
+
+```
+    # ip a
+    # ip r
+
+    # nmcli c
+    # nmcli d
+    # nmcli d sh
+    # nmcli d sh [eth]
+```
+
+## 新規アドレス設定
+
+### 新規で1つ設定
+
+```
+    # nmcli c mod eth1 ipv4.method manual ip4 "[IP1]/[NetMask]" gw4 "[gwIP]"
+    # nmcli c up eth1
+```
+
+- /etc/sysconfig/network-scripts/ifcfg-eth1
+
+```
+TYPE=Ethernet
+BOOTPROTO=none
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=eth1
+UUID=5e24d6ef-2799-4266-b100-0b31ea054311
+DEVICE=eth1
+ONBOOT=yes
+IPADDR=192.168.1.10
+PREFIX=24
+GATEWAY=192.168.1.1
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+```
+
+### 変更  
+7.2だとAliasとして追加される(ifcfg-eth1:1みたいなファイルができる)とか挙動違うので注意
+
+```
+    # nmcli c mod eth1 ipv4.method manual ip4 "[IP1]/[NetMask]" gw4 "[gwIP]"
+    # nmcli c down eth1
+    # nmcli c up eth1
+```
+
+既存にalias振ってある場合、aliasのIPがおそらく消える？
+
+### alias
+
+```
+    # nmcli c mod eth1 ipv4.method manual ip4 "[IP1]/[NetMask], [IP2]/[NetMask]" gw4 "[gwIP]"
+    # nmcli c up eth1
+```
+
+- /etc/sysconfig/network-scripts/ifcfg-eth1
+
+```
+TYPE=Ethernet
+BOOTPROTO=none
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=eth1
+UUID=5e24d6ef-2799-4266-b100-0b31ea054311
+DEVICE=eth1
+ONBOOT=yes
+IPADDR=192.168.1.10
+PREFIX=24
+IPADDR1=192.168.1.20
+PREFIX1=24
+GATEWAY=192.168.1.1
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+```
+
+## bonding
+LACP(802.3ad)の設定(旧mode4)、ググってもでなさすぎでしょ。  
+`# modprobe bonding` とかやらなくても勝手にロードされた。
+
+```
+eth0 -|
+      |-- bond0
+eth1 -|
+```
+
+- bond0 作成
+
+```
+    # nmcli c add type bond ifname bond0 con-name bond0 mode 802.3ad
+    # nmcli c mod bond0 ipv4.method manual ip4 "[IP1]/[NetMask]" gw4 "[gwIP]"
+```
+
+- slave作成
+
+```
+    # nmcli c add type bond-slave ifname eth0 master bond0
+    # nmcli c add type bond-slave ifname eth1 master bond0
+```
+
+- up
+
+```
+    # nmcli c up bond-slave-eth0
+    # nmcli c up bond-slave-eth1
+    # nmcii c up bond0
+```
+
+- /etc/sysconfig/network-scripts/ifcfg-bond0
+
+```
+DEVICE=bond0
+BONDING_OPTS=mode=802.3ad
+TYPE=Bond
+BONDING_MASTER=yes
+BOOTPROTO=dhcp
+DEFROUTE=yes
+PEERDNS=yes
+PEERROUTES=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=bond0
+UUID=fa70c818-c6ed-40d8-b59f-fc961d322b7e
+ONBOOT=yes
+```
+
+- /etc/sysconfig/network-scripts/ifcfg-bond-slave-eth0
+
+```
+TYPE=Ethernet
+NAME=bond-slave-eth0
+UUID=7e0a3be1-d2a9-4fe2-a082-742c184ed5ad
+DEVICE=eth0
+ONBOOT=yes
+MASTER=bond0
+SLAVE=yes
+```
+
+- 解除
+
+```
+    # nmcli c del bond-slave-eth0
+    # nmcli c del bond-slave-eth0
+    # nmcli c del bond0
+```
+
+
+## bonding + vlan
+8021qも特に何もせずinterfaceあげたらロードされてた。
+
+
+```
+eth0 -|
+      |-- bond0 -- vlan10
+eth1 -|
+```
+
+- bond0/slave作成
+
+```
+    # nmcli c add type bond ifname bond0 con-name bond0 mode 802.3ad
+    # nmcli c mod bond0 ipv4.method disabled ipv6.method ignore
+    # nmcli c add type bond-slave ifname eth0 master bond0
+    # nmcli c add type bond-slave ifname eth1 master bond0
+```
+
+Vlan interface作成
+
+```
+    # nmcli c add type vlan ifname bond0.10 con-name bond0.10 dev bond0 id 10
+    # nmcli c mod bond0.10 ipv4.method manual ip4 "[IP1]/[NetMask]" gw4 "[gwIP]"
+    # nmcli c up bond-slave-eth0
+    # nmcli c up bond-slave-eth1
+    # nmcii c up bond0
+    # nmcli c up bond0.10
+```
+
+-  /etc/sysconfig/network-scripts/ifcfg-bond0
+
+```
+DEVICE=bond0
+TYPE=Bond
+BONDING_MASTER=yes
+DEFROUTE=yes
+PEERDNS=yes
+PEERROUTES=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=no
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=bond0
+UUID=1efa71c5-ad0c-4e63-8685-8d14045cb769
+ONBOOT=yes
+BONDING_OPTS=mode=802.3ad
+```
+
+- /etc/sysconfig/network-scripts/ifcfg-bond0.10
+
+```
+VLAN=yes
+TYPE=Vlan
+DEVICE=bond0.10
+PHYSDEV=bond0
+VLAN_ID=10
+REORDER_HDR=yes
+GVRP=no
+MVRP=no
+BOOTPROTO=none
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=bond0.10
+UUID=501b8c1a-624b-4ae3-9974-d96efe5f16f8
+ONBOOT=yes
+IPADDR=192.168.1.10
+PREFIX=24
+GATEWAY=192.168.1.1
+IPV6_PEERDNS=yes
+IPV6_PEERROUTES=yes
+```
