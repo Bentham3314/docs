@@ -260,3 +260,52 @@ GATEWAY=192.168.1.1
 IPV6_PEERDNS=yes
 IPV6_PEERROUTES=yes
 ```
+
+
+### DNS/route
+
+```
+    # nmcli c mod eth1 ipv4.dns "[DNS_IP] [DNS_IP2]"
+    # nmcli c mod eth1 ipv4.routes "[NETWORK_IP/MASK] [GW_IP]"
+```
+
+### del
+
+```
+    # nmcli d show
+    # nmcli c del eth1
+    # nmcli d show
+```
+
+### add
+
+```
+    # nmcli d show
+    # nmcli c add type ethernet ifname eth1 con-name eth1
+    # nmcli d show
+```
+
+### hostname
+
+```
+    # nmcli g hostname [hostname]
+    # uname -a
+    # cat /etc/hostname
+```
+
+
+## ip commands
+
+```
+    # ip a add 192.168.0.3/255.255.255.0 dev eth2
+    # ip a show eth2
+
+    # ip route add default via 192.168.0.254  ### add
+    # ip route del default via 192.168.0.254  ### del
+
+    # ip route add 192.168.233.0/24 via 10.0.1.254 dev eth2
+```
+
+```
+    # ip -s l  ### err/drop count
+```
