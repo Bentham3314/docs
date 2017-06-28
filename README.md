@@ -1,3 +1,3 @@
-# memo
+# docs
+tech notes
 
-evernoteがアレになったので、見せれるものを移行する。
