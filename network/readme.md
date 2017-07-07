@@ -10,6 +10,8 @@ https://github.com/Bentham3314/memo/tree/master/network/bond_bridge
 
 ## bonding + bridge + vlan
 
+## CentOS7 (Network Manager)
+https://github.com/Bentham3314/docs/tree/master/network/centos7
 
 # IPを持つインターフェース
 一番外側に設定されるインターフェースにIPアドレスを振る  
