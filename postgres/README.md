@@ -1,5 +1,7 @@
 # postgres
 
+[postgreSQL10](https://employment.en-japan.com/engineerhub/entry/2017/12/27/110000)
+
 ### ggr note
 - postgresql.conf  
 
