@@ -89,4 +89,3 @@ mysql> SELECT * FROM repl_test.t1;
 mysql> SELECT * FROM repl_test.t1;
 ```
 
-```
