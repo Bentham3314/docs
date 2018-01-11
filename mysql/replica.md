@@ -62,6 +62,7 @@ mysql> GRANT REPLICATION SLAVE ON *.* TO `repl`@`localhost`;
 ```
 mysql> CHANGE MASTER TO MASTER_HOST='localhost', MASTER_USER='repl', MASTER_PASSWORD='repl', MASTER_AUTO_POSITION=1;
 mysql> START SLAVE;
+```
 
 7. レプリケーションの動作確認
 
