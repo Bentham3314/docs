@@ -6,13 +6,18 @@ CentOS7.3
 7.2と7.3ですでに動き違うとかいい加減すぎるでしょ…とは思う
 
 `nmcli c` は設定ファイルが生成されるのみ  
-`nmcli edit` は完了時に設定が反映される
 
 ### 従来のNIC名を使用
 GRUB_CMDLINE_LINUX のオプションに下記設定でreboot
 
+- /etc/default/grub
+
 ```
 biosdevname=0 net.ifnames=0
+```
+
+```
+# grub2-mkconfig -o /boot/grub2/grub.cfg
 ```
 
 ## 設定確認コマンド
@@ -261,6 +266,66 @@ IPV6_PEERDNS=yes
 IPV6_PEERROUTES=yes
 ```
 
+### Bonding + VLAN + Bridge
+
+KVM等でホストにtag(trunk)で引き込み、  
+ゲストが接続するbridgeはuntagにする方法
+
+```
+eth2 -|                   |- br100 -- vm
+      |-- bond0 -- vlan --|
+eth3 -|                   |- br200 -- vm
+
+```
+
+- br[12]00を作成
+
+```
+    # nmcli c add type bridge ifname br100 con-name br100
+    # nmcli c mod br100 bridge.stp no
+    # nmcli c mod br100 ipv4.met manual ip4 "192.168.100.10/24" gw4 "192.168.100.1"
+    # nmcli c down br100
+    # nmcli c up br100
+
+    # nmcli c add type bridge ifname br200 con-name br200
+    # nmcli c mod br200 bridge.stp no
+    # nmcli c mod br200 ipv4.met manual ip4 "192.168.200.10/24" gw4 "192.168.200.1"
+    # nmcli c down br200
+    # nmcli c up br200
+```
+
+- IPアドレスを持たないbond0を作成
+
+```
+    # nmcli c add type bond ifname bond0 con-name bond0 mode 802.3ad
+    # nmcli c mod bond0 ipv4.method disabled ipv6.method ignore
+    # nmcli c add type bond-slave ifname eth2 master bond0
+    # nmcli c add type bond-slave ifname eth3 master bond0
+```
+
+- vlan[12]00を作成  
+connection.(master|slave-type)でvlanに接続
+
+```
+    # nmcli c add type vlan ifname vlan100 con-name vlan100 dev bond0 id 100
+    # nmcli c mod vlan100 connection.master br100 connection.slave-type bridge
+
+    # nmcli c add type vlan ifname vlan200 con-name vlan200 dev bond0 id 200
+    # nmcli c mod vlan200 connection.master br200 connection.slave-type bridge
+```
+
+### bridge
+
+```
+    # nmcli c add type bridge ifname br0 con-name br0
+    # nmcli c mod br0 ipv4.met manual ip4 "192.168.0.10/24" gw4 "192.168.0.1"
+
+    # nmcli con add type bridge-slave ifname eth0 master br0
+    # nmcli con add type bridge-slave ifname eth1 master br0
+
+    # brctl show
+    # brctl showstp br0
+```
 
 ### DNS/route
 
