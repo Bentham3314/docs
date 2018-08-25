@@ -52,6 +52,7 @@
 ```
 
 #### pull/commit/build/push
+imageに対する操作
 
 - pull  
 docker imageのDL  
@@ -61,6 +62,16 @@ docker imageのDL
 dockerfileで記述した構築方法を元にdockerイメージをビルド  
 - push  
 dockerイメージをDocker Hubに保存  
+
+- tag  
+
+```
+# docker image tag {old_image[:tag]} {new_image[:tag]}
+
+//変更がなければ同じimage hashを持つ
+# docker image tag example/echo:latest example/echo:0.1.0
+# docker image ls
+```
 
 #### デタッチ/アタッチ
 
@@ -197,6 +208,17 @@ build
 
 tagは指定しない場合latestになる  
 name_spaceは省略可能
+
+### search
+
+```
+# docker search [option] {word}
+
+# docker search --limit 5 mysql
+```
+
+- 公式リポジトリの名前空間は一律でlibratyがつき、省略される
+
 
 ### example
 
