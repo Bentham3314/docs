@@ -63,6 +63,15 @@ dockerfileで記述した構築方法を元にdockerイメージをビルド
 - push  
 dockerイメージをDocker Hubに保存  
 
+```
+# docker image push [option] {repo[:tag]}
+
+//pullで持ってきたimageの場合は名前空間を変える必要がある
+# docker image tag example/echo:latest my_repo/echo:latest
+# docker image ls
+# docker image push my_repo/echo:latest
+```
+
 - tag  
 
 ```
