@@ -179,11 +179,13 @@ RUN apt-get install -y nodejs
 build
 
 ```
-書式: # docker image build -t {image_naem}[:{tag}] /path/to/Dockerfile_dir
+書式: # docker image build -t {name_space/image_naem}[:{tag}] /path/to/Dockerfile_dir
 # docker build -t node .
+# docker build -t go/echo:latest .
 ```
 
-tagは指定しない場合latestになる
+tagは指定しない場合latestになる  
+name_spaceは省略可能
 
 ```
 # docker images
