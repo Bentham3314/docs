@@ -26,6 +26,10 @@
 # docker rm $(docker ps -a -q)
 
 # docker rm -f $(docker ps -a -q)
+
+// containerは省略可能
+// ls --filterでexample/echoのコンテナを抜き出す
+# docker container stop $(docker container ls --filter "ancestor=example/echo" -q)
 ```
 
 #### start
@@ -36,10 +40,16 @@
 ```
 
 - options  
-i 標準入出力  
-t 擬似端末  
-p ホストの8080番ポートに接続するとコンテナの80番ポートへアクセスする  
+	* i 標準入出力  
+	* t 擬似端末  
+	* p ホストの8080番ポートに接続するとコンテナの80番ポートへアクセスする  
 
+- port forward
+	ホストの9000番にアクセスするとコンテナの8000番へ送られる
+
+```
+# docker container run -d -p 9000:8080 example/echo:latest
+```
 
 #### pull/commit/build/push
 
@@ -182,14 +192,11 @@ build
 書式: # docker image build -t {name_space/image_naem}[:{tag}] /path/to/Dockerfile_dir
 # docker build -t node .
 # docker build -t go/echo:latest .
+# docker images ls
 ```
 
 tagは指定しない場合latestになる  
 name_spaceは省略可能
-
-```
-# docker images
-```
 
 ### example
 
