@@ -166,6 +166,7 @@ Crtl+D で終了
 ```
 
 dockerfile:
+
 ```
 FROM ubuntu
 
@@ -178,12 +179,11 @@ RUN apt-get install -y nodejs
 build
 
 ```
+書式: # docker image build -t {image_naem}[:{tag}] /path/to/Dockerfile_dir
 # docker build -t node .
 ```
 
-- 注意  
-runコマンド1つにつき1つのファイルシステムの層が作られる。  
-AUFSファイルシステムの制限で127層を超える事はできないため、127行以内に収める必要がある  
+tagは指定しない場合latestになる
 
 ```
 # docker images
