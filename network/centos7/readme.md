@@ -358,6 +358,12 @@ connection.(master|slave-type)でvlanに接続
     # cat /etc/hostname
 ```
 
+### onboot=yes
+
+```
+# nmcli c mod enp2s0f1 connection.autoconnect yes
+```
+
 
 ## ip commands
 
