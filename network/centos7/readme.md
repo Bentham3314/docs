@@ -120,7 +120,8 @@ eth1 -|
 - bond0 作成
 
 ```
-    # nmcli c add type bond ifname bond0 con-name bond0 mode 802.3ad
+    # nmcli c add type bond ifname bond0 con-name bond0 mode 802.3ad // LACP(mode4)
+//  # nmcli c add type bond ifname bond0 con-name bond0 mode active-backup // Active-Backup (mode1) 
     # nmcli c mod bond0 ipv4.method manual ip4 "[IP1]/[NetMask]" gw4 "[gwIP]"
 ```
 
