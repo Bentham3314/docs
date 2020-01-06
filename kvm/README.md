@@ -27,16 +27,24 @@
 # virsh destroy <domain>
 ```
 
-### ゲスト作成
+- misc  
 
-- ディスク  
+```
+# virsh info <domain>
+# virsh dumpxml <domain>
+# virsh net-list --all
+# virsh net-info <net-domain>
+```
+
+### create vm
+
+- create disk  
 
 ```
 # qemu-img create -f raw /var/lib/libvirt/images/centos6.img 30G
 ```
 
-- 作成  
-ファイル
+- local kickstart file
 
 ```
 # virt-install \
@@ -55,26 +63,23 @@
 --extra-args='console=tty0 console=ttyS0,115200n8 keymap=us ks=file:/centos6.ks'
 ```
 
-URL
+- kickstart
 
 ```
-# virt-install \
---connect qemu:///system \
---name=c5 \
---ram=512 \
---file=/var/lib/libvirt/images/centos6.img \
---file-size=30 \
---vcpus=2 \
---os-type=linux \
+# virt-install --connect qemu:///system --hvm \
+--os-type linux --accelerate \
+--name pxe_vm \
+--vcpus 2 \
+--memory 2048 \
+--disk /var/lib/libvirt/images/vm.img,size=30,device=disk,bus=virtio,format=raw \
+--network bridge=br255,model=virtio,mac=52:54:00:49:3f:f7 \
 --nographics \
---accelerate \
---hvm \
---location='' \
---extra-args='console=tty0 console=ttyS0,115200n8 keymap=us ks=http://hoge/centos6.ks'
+--os-variant centos7.0 \
+--location=http://...... \
+--extra-args "console=tty0 console=ttyS0,115200n8 ksdevice=eth0 ks=http://...../ks/centos7_kvm_vda.ks"
 ```
 
-
-- 複製  
+### virt-clone  
 オリジナルのゲストはシャットダウンすること
 
 ```
@@ -82,9 +87,7 @@ URL
 ```
 
 
-### 余談
-
-vyosインストール
+### vyosインストール
 
 
 ```
