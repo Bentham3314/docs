@@ -28,6 +28,10 @@ check file list
 
 ```
 > show interfaces diagnostics optics [int]
+
+// vc-port optics power
+> request virtual-chassis vc-port diagnostics optics
+> show virtual-chassis vc-port diagnostics optics
 ```
 
 - config upload(ftp)
