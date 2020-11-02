@@ -8,14 +8,77 @@
 # lsmod | grep ^nf
 
 // 設定の保存/永続化
-# nft list ruleset > /etc/nftables.conf
+# nft list ruleset > /etc/sysconfig/nftables.conf
 
 // fileから設定のロード
 # nft -f filename
 ```
 
-- /etc/nftables.confに書き出した後、そのままruleを追加して `nft -f /etc/nftables.conf` でロードするとルールが重複する.  
-  ファイルの先頭に `flush ruleset` を追加してから `nft -f /etc/nftables.conf.new` とかでロードしてもう一回書き出す.  
+- `/etc/sysconfig/nftables.conf` に書き出した後、そのままruleを追加して `nft -f /etc/sysconfig/nftables.conf` でロードするとルールが重複する.  
+  ファイルの先頭に `flush ruleset` を追加してから `nft -f /etc/sysconfig/nftables.conf.new` とかでロードしてもう一回書き出す.  
+
+### 実際の運用について
+systemdによると  
+- `/etc/sysconfig/nftables.conf` を起動時にロードする  
+- reloadの動作は `etc/sysconfig/nftables.conf` を再読み込み  
+
+systemdの動作から、設定用scriptを用意し、 `nft -f [filename]` でロードし、  
+`nft list ruleset >| /etc/sysconfig/nftables.conf` に書き出すのが良さそう.  
+
+```
+[root@t3/1012]# cat /etc/systemd/system/multi-user.target.wants/nftables.service
+[Unit]
+Description=Netfilter Tables
+Documentation=man:nft(8)
+Wants=network-pre.target
+Before=network-pre.target
+
+[Service]
+Type=oneshot
+ProtectSystem=full
+ProtectHome=true
+ExecStart=/sbin/nft -f /etc/sysconfig/nftables.conf
+ExecReload=/sbin/nft 'flush ruleset; include "/etc/sysconfig/nftables.conf";'
+ExecStop=/sbin/nft flush ruleset
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+[root@t3/1013]#
+```
+
+```
+[root@t3/1023]# cat /root/bin/nft_setup.nft
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet firewall {
+	chain inbound {
+		type filter hook input priority 0; policy drop;
+		ct state established,related counter accept
+		ct state invalid counter drop
+		iifname "lo" accept
+		ip protocol icmp limit rate 10/second counter accept
+		ip6 nexthdr ipv6-icmp limit rate 10/second counter accept
+		tcp dport ssh counter accept
+		tcp dport http counter accept
+# accept ip
+		ip saddr 192.0.2.0/24 counter accept
+# blackbox_exporter
+    tcp dport 9115 ip saddr 198.51.100.1/32 counter accept
+	}
+
+	chain outbound {
+		type filter hook output priority 0; policy accept;
+	}
+
+	chain forward {
+		type filter hook forward priority 0; policy drop;
+	}
+}
+[root@t3/1024]#
+```
 
 # ToDo:
 - NAT設定例
