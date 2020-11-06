@@ -1,5 +1,26 @@
 # command
-bashコマンド いろいろ置き場
+Misc Linux commands
+
+## performance
+
+```
+# uptime
+# vmstat 1
+# free -m
+# top
+# dmesg | tail
+# tail /var/log/messages
+
+// Require sysstat pkg
+# pidstat 1
+# iostat -xz 1
+# mpstat -P ALL 1
+# sar -n DEV 1
+# sar -n TCP,ETCP 1
+
+// install sysstat
+# yum install -y sysstat
+```
 
 ### openssl
 証明書の確認/SSLを使用するtelnet的な使い方が可能
@@ -19,6 +40,18 @@ $ echo | openssl s_client -connect hoge:443 -showcerts 2>&1 | openssl x509 -noou
 * SNI
 ```
 $ echo | openssl s_client -connect hoge:443 -servername fuga 2>&1
+```
+
+* key-pair check  
+```
+# openssl x509 -noout -modulus -in <cert_file>
+# openssl rsa -noout -modulus -in <key_file>
+# diff <(openssl x509 -noout -modulus -in <cert_file>) <(openssl rsa -noout -modulus -in <key_file>)
+```
+
+* 証明書から発行元、ドメイン、期限などを確認する  
+```
+# openssl x509 -noout -issuer -subject -dates -in /tmp/server.crt
 ```
 
 * version確認
